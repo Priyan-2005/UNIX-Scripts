@@ -1,0 +1,42 @@
+declare -a Transaction_ID
+declare -a Copyfile
+declare S=1
+mkdir FailedXML
+readarray -t Transaction_ID < Input.txt
+TC=$(wc -l < Input.txt)
+printf "Start Time:">>Search_String_File_Name_Mapping..txt
+date>>Search_String_File_Name_Mapping..txt
+printf " \n \n" >>Search_String_File_Name_Mapping..txt
+printf "Transaction ID  |   [File Path/Name]:[Line Number]:[Line Text]">>Search_String_File_Name_Mapping..txt
+#[File Path/Name]:[Line Number]:[Line Text]
+printf "\n \n \n" ./ >>Search_String_File_Name_Mapping..txt
+printf "Scanning Initiated \n"
+printf "Scan In Progress \n"
+date
+for ((c=0;c<$TC;c++))
+do
+if egrep -R -n -q --include="*.dat" "${Transaction_ID[c]}"
+#if egrep -R -n -q --include="*.dat" "${Transaction_ID[c]}"
+then
+printf "${S}./" >>Search_String_File_Name_Mapping..txt
+((S=S+1))
+printf "${Transaction_ID[c]}  |" ./ >>Search_String_File_Name_Mapping..txt
+egrep -R -n -a --include="*.dat" "${Transaction_ID[c]}" ./ >>Search_String_File_Name_Mapping..txt
+grep -rl --include="*.dat" "${Transaction_ID[c]}" ${PWD} >>Move_File.txt
+printf " \n \n" >>Search_String_File_Name_Mapping..txt
+fi
+done
+awk '!x[$0]++' Move_File.txt> Move_Files.txt
+rm Move_File.txt
+printf "End Time:">>Search_String_File_Name_Mapping..txt
+date>>Search_String_File_Name_Mapping..txt
+printf "Scan Completed \n"
+readarray -t Copyfile < Move_Files.txt
+TCF=$(wc -l < Move_Files.txt)
+for ((c=0;c<$TCF;c++))
+do
+#printf "${Copyfile[0]} \n" 
+cp ${Copyfile[c]} ./FailedXML/
+done
+date
+exit
