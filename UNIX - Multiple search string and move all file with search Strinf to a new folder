@@ -36,7 +36,7 @@ TCF=$(wc -l < Move_Files.txt)
 for ((c=0;c<$TCF;c++))
 do
 #printf "${Copyfile[0]} \n" 
-cp ${Copyfile[c]} ./FailedXML/
+cp ${Copyfile[c]} ./MoveHere/
 done
 date
 exit
