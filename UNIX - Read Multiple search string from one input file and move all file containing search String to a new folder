@@ -1,8 +1,8 @@
 declare -a Transaction_ID
 declare -a Copyfile
 declare S=1
-mkdir FailedXML
-readarray -t Transaction_ID < Input.txt
+mkdir movehere
+readarray -t Search_ID < Input.txt
 TC=$(wc -l < Input.txt)
 printf "Start Time:">>Search_String_File_Name_Mapping..txt
 date>>Search_String_File_Name_Mapping..txt
@@ -15,14 +15,14 @@ printf "Scan In Progress \n"
 date
 for ((c=0;c<$TC;c++))
 do
-if egrep -R -n -q --include="*.dat" "${Transaction_ID[c]}"
-#if egrep -R -n -q --include="*.dat" "${Transaction_ID[c]}"
+if egrep -R -n -q --include="*.dat" "${Search_ID[c]}"
+#if egrep -R -n -q --include="*.dat" "${Search_ID[c]}"
 then
 printf "${S}./" >>Search_String_File_Name_Mapping..txt
 ((S=S+1))
-printf "${Transaction_ID[c]}  |" ./ >>Search_String_File_Name_Mapping..txt
-egrep -R -n -a --include="*.dat" "${Transaction_ID[c]}" ./ >>Search_String_File_Name_Mapping..txt
-grep -rl --include="*.dat" "${Transaction_ID[c]}" ${PWD} >>Move_File.txt
+printf "${Search_ID[c]}  |" ./ >>Search_String_File_Name_Mapping..txt
+egrep -R -n -a --include="*.dat" "${Search_ID[c]}" ./ >>Search_String_File_Name_Mapping..txt
+grep -rl --include="*.dat" "${Search_ID[c]}" ${PWD} >>Move_File.txt
 printf " \n \n" >>Search_String_File_Name_Mapping..txt
 fi
 done
