@@ -1,0 +1,52 @@
+#S_F - Source Folder - Where User wants to search file
+#D_F - Destination folder where User wants to copy file which matched search string
+#Search_String_Input.txt - Search string file where user input all the strings which needs to be searched in source folder
+#Search_String_to_File_Mapping: This utility will generates which contain Search string it its matching file name where search string were found.
+declare -a Search_String_Array # take input from 
+declare S=1
+declare CL # Current Location
+CL=$(pwd)
+read -p "Enter Source Folder full path:" S_F # Source_Folder
+read -p "Enter Destination Folder full path:" D_F #Destination Folder
+readarray -t Search_String_Array < Search_String_Input.txt 
+TC=$(wc -l < Search_String_Input.txt)
+printf "Start Time:">> "$CL"/Search_String_to_File_Mapping.txt
+date>> "$CL"/Search_String_to_File_Mapping.txt
+printf " \n \n" >> "$CL"/Search_String_to_File_Mapping.txt
+printf "Transaction ID  |   [File Path/Name]:[Line Number]:[Line Text]">> "$CL"/Search_String_to_File_Mapping.txt
+#[File Path/Name]:[Line Number]:[Line Text]
+printf "\n \n \n" ./ >> "$CL"/Search_String_to_File_Mapping.txt
+printf "Scanning Initiated \n"
+printf "Scan In Progress \n"
+date
+cd "$S_F"
+for ((c=0;c<$TC;c++))
+do
+if egrep -R -n -q --include="*" "${Search_String_Array[c]}" --exclude="*.txt"
+#if egrep -R -n -q --include="*.dat" "${Search_String_Array[c]}"
+then
+printf "${S}. " >> "$CL"/Search_String_to_File_Mapping.txt
+((S=S+1))
+printf "${Search_String_Array[c]}  |\n" ./ >> "$CL"/Search_String_to_File_Mapping.txt
+egrep -R -n -a --exclude="*.txt" "${Search_String_Array[c]}" >> "$CL"/Search_String_to_File_Mapping.txt
+#egrep -R -n -a --include="*" --exclude="*.txt" "${Search_String_Array[c]}" >> "$CL"/Search_String_to_File_Mapping.txt
+grep -rl --exclude="*.txt" "${Search_String_Array[c]}" ${PWD} >> "$CL"/Move_File.txt
+#grep -rl --include="*" --exclude="*.txt" "${Search_String_Array[c]}" ${PWD} >> "$CL"/Move_File.txt
+printf " \n \n" >> "$CL"/Search_String_to_File_Mapping.txt
+fi
+done
+cd "$CL"
+awk '!x[$0]++' Move_File.txt> Move_Files.txt # This is to remove any Duplicates records
+rm Move_File.txt
+printf "End Time:">> "$CL"/Search_String_to_File_Mapping.txt
+date>> "$CL"/Search_String_to_File_Mapping.txt
+printf "Scan Completed \n"
+readarray -t Copyfile < "$CL"/Move_Files.txt
+TCF=$(wc -l < "$CL"/Move_Files.txt)
+for ((c=0;c<$TCF;c++))
+do
+#printf "${Copyfile[0]} \n" 
+cp ${Copyfile[c]} "$D_F"
+done
+date
+exit
